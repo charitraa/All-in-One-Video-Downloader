@@ -16,14 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from youtube import views
+from youtube import views as youtube_views
+from instagram import views as insatagram_views
+from twitter import views as twitter_views
+from facebook import views as facebook_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('download/youtube/', views.DownloadYouTubeVideo.as_view(), name='download_youtube'),
-    # path('download/twitter/', DownloadTwitterVideo.as_view(), name='download_twitter'),
+    path('download/youtube/', youtube_views.DownloadYouTubeVideo.as_view(), name='download_youtube'),
     # path('download/linkedin/', DownloadLinkedInVideo.as_view(), name='download_linkedin'),
-    # path('download/instagram/', DownloadInstagramVideo.as_view(), name='download_instagram'),
-    # path('download/facebook/', DownloadFacebookVideo.as_view(), name='download_facebook'),
-    # path('download/reddit/', DownloadRedditVideo.as_view(), name='download_reddit'),
+    path('download/instagram/', insatagram_views.DownloadInstagramMedia.as_view(), name='download_instagram'),
+    path('download/facebook/', facebook_views.DownloadFacebookVideo.as_view(), name='download_facebook'),
+    path('download/twitter/', twitter_views.DownloadTwitterVideo.as_view(), name='download_twitter'),
+
 ]
