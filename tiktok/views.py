@@ -13,7 +13,6 @@ class DownloadTikTokVideo(APIView):
         serializer = VideoDownloadSerializer(data=request.data)
         if serializer.is_valid():
             url = serializer.validated_data['url']
-            
             try:
                 # Initialize TikTok API
                 api = TikTokApi.get_instance()

@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import VideoDownloadSerializer
 import os
+import tempfile
 
 class DownloadTwitterVideo(APIView):
     def post(self, request):
@@ -30,18 +31,20 @@ class DownloadTwitterVideo(APIView):
                     return Response({'error': 'No video found in the tweet.'}, status=status.HTTP_400_BAD_REQUEST)
                 
                 # Download the video
-                video_content = requests.get(video_url).content
-                video_path = 'videos/twitter_video.mp4'
-                os.makedirs(os.path.dirname(video_path), exist_ok=True)
-                with open(video_path, 'wb') as video_file:
-                    video_file.write(video_content)
+                try:
+                    video_content = requests.get(video_url).content
+                except requests.exceptions.RequestException as e:
+                    return Response({'error': 'Failed to download the video: ' + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 
-                # Serve the video as a download
-                response = FileResponse(open(video_path, 'rb'), as_attachment=True, filename='twitter_video.mp4')
+                # Use a temporary file to serve the video
+                with tempfile.NamedTemporaryFile(delete=False) as temp_video:
+                    temp_video.write(video_content)
+                    temp_video.flush()
+                    response = FileResponse(open(temp_video.name, 'rb'), as_attachment=True, filename='twitter_video.mp4')
                 
-                # Clean up the video file after serving
-                os.remove(video_path)
-
+                # Clean up the temporary file after serving
+                os.remove(temp_video.name)
+                
                 return response
 
             except Exception as e:
