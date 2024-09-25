@@ -5,6 +5,7 @@ const Home: React.FC = () => {
   const [url, setUrl] = useState<string>('');
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [downloadProgress, setDownloadProgress] = useState<number>(0);
 
   // Toggle dark mode and store the preference in local storage
   const toggleDarkMode = () => {
@@ -20,59 +21,62 @@ const Home: React.FC = () => {
       setDarkMode(false);
     }
   }, []);
-  
-  interface ApiResponse {
-  error?: string;
-}
 
   const platforms = [
-    { name: 'Twitter Downloader', icon: '🐦', key: 'twitter' },
-    { name: 'YouTube Downloader', icon: '📹', key: 'youtube' },
-    { name: 'Facebook Downloader', icon: '📘', key: 'facebook' },
-    { name: 'Instagram Downloader', icon: '📷', key: 'instagram' },
-    // { name: 'Reddit Downloader', icon: '👽', key: 'reddit' },
-    // { name: 'LinkedIn Downloader', icon: '💼', key: 'linkedin' },
-    { name: 'TikTok Downloader', icon: '🎵', key: 'tiktok' },
-    { name: 'Instagram Story Downloader', icon: '📷', key: 'instagram_story' },
-    { name: 'Facebook Story Downloader', icon: '📘', key: 'facebook_story' },
+    { name: 'Twitter Downloader', icon: '🐦', key: 'twitter' },          
+    { name: 'YouTube Downloader', icon: '▶️', key: 'youtube' },          
+    { name: 'Facebook Downloader', icon: '📘', key: 'facebook' },        
+    { name: 'Instagram Downloader', icon: '📸', key: 'instagram' },      
+    { name: 'TikTok Downloader', icon: '🎵', key: 'tiktok' },            
+    { name: 'Instagram Story Downloader', icon: '📸', key: 'instagram_story' }, 
+    { name: 'Facebook Story Downloader', icon: '📘', key: 'facebook_story' },   
   ];
 
-  const downloadVideo = async () => {
+  const downloadVideo = () => {
     setErrorMessage(null); // Reset error message
     if (!url) {
       setErrorMessage("Please enter a valid URL.");
       return;
     }
 
-    const apiUrl = `http://127.0.0.1:8000/api/download/${platform}`; // Change this to your actual backend URL
+    const apiUrl = `http://127.0.0.1:8000/download/${platform}/`; // Change this to your actual backend URL
 
-    try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url }),
-      });
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', apiUrl, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
 
-      if (!response.ok) {
-        const errorData:ApiResponse = await response.json();
-        throw new Error(errorData.error || 'Something went wrong');
+    xhr.responseType = 'blob';
+
+    // Track the download progress
+    xhr.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const progress = (event.loaded / event.total) * 100;
+        setDownloadProgress(progress);
       }
+    };
 
-      const blob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = `${platform}_video.mp4`; // Customize file name
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(downloadUrl); // Clean up URL object
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const blob = new Blob([xhr.response], { type: 'video/mp4' });
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = `${platform}_video.mp4`; // Customize file name
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(downloadUrl); // Clean up URL object
+        setDownloadProgress(0); // Reset progress after download
+      } else {
+        setErrorMessage('Download failed.');
+      }
+    };
 
-    } catch (error) {
-    setErrorMessage((error as Error).message);
-  }
+    xhr.onerror = () => {
+      setErrorMessage('Error occurred while downloading the video.');
+    };
+
+    xhr.send(JSON.stringify({ url }));
   };
 
   return (
@@ -131,6 +135,13 @@ const Home: React.FC = () => {
             />
           </div>
 
+          {downloadProgress > 0 && (
+            <div className="mb-4 text-center">
+              <progress value={downloadProgress} max="100" />
+              <p>{downloadProgress.toFixed(2)}% downloaded</p>
+            </div>
+          )}
+
           <button
             onClick={downloadVideo}
             className="w-full bg-blue-500 text-white px-6 py-3 rounded-xl shadow-lg text-lg font-semibold transition duration-300 hover:bg-blue-600 hover:shadow-2xl dark:bg-blue-600 dark:hover:bg-blue-700"
@@ -144,12 +155,3 @@ const Home: React.FC = () => {
 };
 
 export default Home;
-
-
-
-
-
-
-
-
-
