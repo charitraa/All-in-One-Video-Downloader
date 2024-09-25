@@ -4,6 +4,7 @@ const Home: React.FC = () => {
   const [platform, setPlatform] = useState<string>('twitter');
   const [url, setUrl] = useState<string>('');
   const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Toggle dark mode and store the preference in local storage
   const toggleDarkMode = () => {
@@ -19,6 +20,10 @@ const Home: React.FC = () => {
       setDarkMode(false);
     }
   }, []);
+  
+  interface ApiResponse {
+  error?: string;
+}
 
   const platforms = [
     { name: 'Twitter Downloader', icon: '🐦', key: 'twitter' },
@@ -31,6 +36,44 @@ const Home: React.FC = () => {
     { name: 'Instagram Story Downloader', icon: '📷', key: 'instagram_story' },
     { name: 'Facebook Story Downloader', icon: '📘', key: 'facebook_story' },
   ];
+
+  const downloadVideo = async () => {
+    setErrorMessage(null); // Reset error message
+    if (!url) {
+      setErrorMessage("Please enter a valid URL.");
+      return;
+    }
+
+    const apiUrl = `http://127.0.0.1:8000/api/download/${platform}`; // Change this to your actual backend URL
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url }),
+      });
+
+      if (!response.ok) {
+        const errorData:ApiResponse = await response.json();
+        throw new Error(errorData.error || 'Something went wrong');
+      }
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = `${platform}_video.mp4`; // Customize file name
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(downloadUrl); // Clean up URL object
+
+    } catch (error) {
+    setErrorMessage((error as Error).message);
+  }
+  };
 
   return (
     <div className={`${darkMode ? 'dark' : ''}`}>
@@ -48,6 +91,10 @@ const Home: React.FC = () => {
           <h1 className="text-3xl font-extrabold text-center mb-6 text-gray-800 dark:text-gray-100">
             All in One Video Downloader
           </h1>
+
+          {errorMessage && (
+            <div className="mb-4 text-red-600 dark:text-red-400 text-center">{errorMessage}</div>
+          )}
 
           <p className="text-center text-gray-600 dark:text-gray-300 mb-8">
             Download videos from multiple platforms with one click. Paste the video URL and save it directly to your device.
@@ -85,7 +132,7 @@ const Home: React.FC = () => {
           </div>
 
           <button
-            onClick={() => console.log(`Downloading from ${platform}`)}
+            onClick={downloadVideo}
             className="w-full bg-blue-500 text-white px-6 py-3 rounded-xl shadow-lg text-lg font-semibold transition duration-300 hover:bg-blue-600 hover:shadow-2xl dark:bg-blue-600 dark:hover:bg-blue-700"
           >
             Download Video
@@ -97,3 +144,12 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
+
+
+
+
+
+
+
+

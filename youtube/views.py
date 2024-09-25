@@ -1,29 +1,43 @@
-from pytube import YouTube
-from django.http import FileResponse
+from django.http import StreamingHttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import VideoDownloadSerializer
-import os
-
-import os
+import yt_dlp
+from io import BytesIO
 
 class DownloadYouTubeVideo(APIView):
     def post(self, request):
         serializer = VideoDownloadSerializer(data=request.data)
         if serializer.is_valid():
             url = serializer.validated_data['url']
-            
+
             try:
-                yt = YouTube(url)
-                video_stream = yt.streams.get_highest_resolution()
+                # Set up an in-memory buffer to store the video
+                buffer = BytesIO()
 
-                video_path = video_stream.download(output_path='videos', filename='youtube_video.mp4')
+                # yt-dlp options to download video directly into buffer
+                ydl_opts = {
+                    'format': 'best',  # Best available quality
+                    'outtmpl': '-',    # Write to stdout
+                    'quiet': True,     # Disable verbose logs
+                    'postprocessors': [{
+                        'key': 'FFmpegExtractAudio',  # Optional: extract audio if needed
+                        'preferredcodec': 'mp4',      # Output format
+                        'preferredquality': '192',     # Bitrate
+                    }],
+                    'writeinfojson': True,  # Get video info
+                }
 
-                response = FileResponse(open(video_path, 'rb'), as_attachment=True, filename='youtube_video.mp4')
-                
-                # Remove the file after response is generated
-                os.remove(video_path)
+                # Use yt-dlp to download the video
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    ydl.download([url])
+
+                buffer.seek(0)  # Rewind the buffer to the beginning
+
+                # Serve the file as a downloadable response to the user
+                response = StreamingHttpResponse(buffer, content_type='video/mp4')
+                response['Content-Disposition'] = 'attachment; filename="youtube_video.mp4"'
 
                 return response
 
