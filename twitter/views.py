@@ -42,9 +42,7 @@ class DownloadTwitterVideo(APIView):
                     temp_video.flush()
                     response = FileResponse(open(temp_video.name, 'rb'), as_attachment=True, filename='twitter_video.mp4')
                 
-                # Clean up the temporary file after serving
                 os.remove(temp_video.name)
-                
                 return response
 
             except Exception as e:
