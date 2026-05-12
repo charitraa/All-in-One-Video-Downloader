@@ -1,5 +1,4 @@
-import snscrape.modules.twitter as sntwitter
-import requests
+import yt_dlp
 from django.http import FileResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -13,39 +12,34 @@ class DownloadTwitterVideo(APIView):
         serializer = VideoDownloadSerializer(data=request.data)
         if serializer.is_valid():
             url = serializer.validated_data['url']
-            
+
             try:
-                tweet_id = url.split('/')[-1]  # Extract tweet ID from URL
-                tweet = next(sntwitter.TwitterTweetScraper(tweet_id).get_items())
-                
-                if not tweet.media:
-                    return Response({'error': 'No media found in the tweet.'}, status=status.HTTP_400_BAD_REQUEST)
-                
-                video_url = None
-                for media in tweet.media:
-                    if hasattr(media, 'video'):
-                        video_url = media.video.variants[0].url
-                        break
-                
-                if not video_url:
-                    return Response({'error': 'No video found in the tweet.'}, status=status.HTTP_400_BAD_REQUEST)
-                
-                # Download the video
-                try:
-                    video_content = requests.get(video_url).content
-                except requests.exceptions.RequestException as e:
-                    return Response({'error': 'Failed to download the video: ' + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-                
-                # Use a temporary file to serve the video
-                with tempfile.NamedTemporaryFile(delete=False) as temp_video:
-                    temp_video.write(video_content)
-                    temp_video.flush()
-                    response = FileResponse(open(temp_video.name, 'rb'), as_attachment=True, filename='twitter_video.mp4')
-                
-                os.remove(temp_video.name)
-                return response
+                # yt-dlp options for Twitter video download
+                ydl_opts = {
+                    'format': 'bestvideo+bestaudio/best',
+                    'outtmpl': '%(temp_filename)s',
+                    'noplaylist': True,
+                }
+
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    # Download directly to a temporary file
+                    info_dict = ydl.extract_info(url, download=True)
+                    video_path = ydl.prepare_filename(info_dict)
+
+                    # Check if download was successful
+                    if not os.path.exists(video_path):
+                        return Response({'error': 'Failed to download video.'}, status=status.HTTP_400_BAD_REQUEST)
+
+                    # Serve the video as a download
+                    with open(video_path, 'rb') as video_file:
+                        response = FileResponse(video_file, as_attachment=True, filename='twitter_video.mp4')
+
+                    # Clean up the temporary video file after serving
+                    os.remove(video_path)
+
+                    return response
 
             except Exception as e:
                 return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

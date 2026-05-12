@@ -17,16 +17,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from youtube import views as youtube_views
-from instagram import views as insatagram_views
+from instagram import views as instagram_views
 from twitter import views as twitter_views
 from facebook import views as facebook_views
+from tiktok import views as tiktok_views
+from reddit import views as reddit_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('download/youtube/', youtube_views.DownloadYouTubeVideo.as_view(), name='download_youtube'),
-    # path('download/linkedin/', DownloadLinkedInVideo.as_view(), name='download_linkedin'),
-    path('download/instagram/', insatagram_views.DownloadInstagramMedia.as_view(), name='download_instagram'),
+    path('download/instagram/', instagram_views.DownloadInstagramMedia.as_view(), name='download_instagram'),
+    path('download/instagram/story/', instagram_views.DownloadInstagramStory.as_view(), name='download_instagram_story'),
     path('download/facebook/', facebook_views.DownloadFacebookVideo.as_view(), name='download_facebook'),
+    path('download/facebook/story/', facebook_views.DownloadFacebookStory.as_view(), name='download_facebook_story'),
     path('download/twitter/', twitter_views.DownloadTwitterVideo.as_view(), name='download_twitter'),
-
+    path('download/tiktok/', tiktok_views.DownloadTikTokVideo.as_view(), name='download_tiktok'),
+    path('download/reddit/', reddit_views.DownloadRedditVideo.as_view(), name='download_reddit'),
 ]
