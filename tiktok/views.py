@@ -7,38 +7,83 @@ from .serializers import VideoDownloadSerializer
 import os
 import tempfile
 
+
+class SelfDeletingFileResponse(FileResponse):
+    def __init__(self, path, *args, **kwargs):
+        self._path_to_delete = path
+        super().__init__(open(path, 'rb'), *args, **kwargs)
+
+    def close(self):
+        super().close()
+        try:
+            os.remove(self._path_to_delete)
+        except OSError:
+            pass
+
+
 class DownloadTikTokVideo(APIView):
     def post(self, request):
         serializer = VideoDownloadSerializer(data=request.data)
-        if serializer.is_valid():
-            url = serializer.validated_data['url']
-            try:
-                # yt-dlp options for TikTok video download
-                ydl_opts = {
-                    'format': 'bestvideo+bestaudio/best',
-                    'outtmpl': '%(temp_filename)s',
-                    'noplaylist': True,
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        url = serializer.validated_data['url']
+
+        # Use a temp DIRECTORY so yt-dlp controls the filename — no pre-existing file conflict
+        tmp_dir = tempfile.mkdtemp()
+        tmp_path = os.path.join(tmp_dir, 'video.mp4')
+
+        try:
+            ydl_opts = {
+                'format': 'best',
+                'outtmpl': tmp_path,
+                'noplaylist': True,
+                'quiet': False,
+                'overwrites': True,  # Force overwrite even if file exists
+                'extractor_args': {
+                    'tiktok': {
+                        'api_hostname': ['api16-normal-c-useast1a.tiktokv.com']
+                    }
                 }
+            }
 
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    # Download directly to a temporary file
-                    info_dict = ydl.extract_info(url, download=True)
-                    video_path = ydl.prepare_filename(info_dict)
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([url])
 
-                    # Check if download was successful
-                    if not os.path.exists(video_path):
-                        return Response({'error': 'Failed to download video.'}, status=status.HTTP_400_BAD_REQUEST)
+            # yt-dlp may choose a different extension; find whatever was downloaded
+            actual_path = tmp_path
+            if not os.path.exists(actual_path) or os.path.getsize(actual_path) == 0:
+                # Look for any file yt-dlp wrote in the temp dir
+                files = [f for f in os.listdir(tmp_dir) if os.path.isfile(os.path.join(tmp_dir, f))]
+                if not files:
+                    return Response(
+                        {'error': 'Download failed or produced an empty file'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                actual_path = os.path.join(tmp_dir, files[0])
 
-                    # Serve the video as a download
-                    with open(video_path, 'rb') as video_file:
-                        response = FileResponse(video_file, as_attachment=True, filename='tiktok_video.mp4')
+            if os.path.getsize(actual_path) == 0:
+                return Response(
+                    {'error': 'Downloaded file is empty'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-                    # Clean up the temporary video file after serving
-                    os.remove(video_path)
+            return SelfDeletingFileResponse(
+                actual_path,
+                as_attachment=True,
+                filename='tiktok_video.mp4',
+                content_type='video/mp4',
+            )
 
-                    return response
-
-            except Exception as e:
-                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        finally:
+            # Clean up the directory itself (SelfDeletingFileResponse handles the file)
+            try:
+                os.rmdir(tmp_dir)
+            except OSError:
+                pass  # Non-empty dir means the file still exists — that's fine
