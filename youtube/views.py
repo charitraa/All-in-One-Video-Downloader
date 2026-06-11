@@ -35,6 +35,10 @@ class DownloadYouTubeVideo(APIView):
                 'merge_output_format': 'mp4',
                 'quiet': False,
                 'cookiefile': 'cookies.txt',
+                # YouTube now requires a JavaScript runtime to solve signature
+                # challenges; 'node' is on PATH. Without this, only image
+                # formats are returned and the requested mp4 is unavailable.
+                'js_runtimes': {'node': {}},
             }
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
