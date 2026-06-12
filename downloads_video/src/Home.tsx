@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect } from 'react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -66,6 +66,47 @@ const MOCK_HISTORY: DownloadItem[] = [
   { id: '5', platform: 'facebook',url: 'https://facebook.com/p/v/1',     filename: 'FB Video.mp4',              status: 'done',   size: '55 MB',  date: '2026-05-10', quality: '1080p', thumb: '' },
   { id: '6', platform: 'youtube', url: 'https://youtube.com/watch?v=xyz', filename: 'Nature Documentary.mp4',   status: 'done',   size: '340 MB', date: '2026-05-09', quality: '4k',    thumb: '' },
 ];
+
+// ─── SEO ──────────────────────────────────────────────────────────────────────
+
+const PAGE_META: Record<Page, { title: string; description: string }> = {
+  home: {
+    title: 'VideoMaster — Free All-in-One Video Downloader for YouTube, TikTok, Instagram & More',
+    description: 'Download videos in up to 4K from YouTube, TikTok, Instagram, Twitter/X, Facebook and Stories — free, fast, no watermarks, no login, no ads.',
+  },
+  download: {
+    title: 'Download a Video — VideoMaster',
+    description: 'Paste a video link from YouTube, TikTok, Instagram, Twitter/X or Facebook, pick a quality from 360p to 4K (or audio-only), and download it for free.',
+  },
+  history: {
+    title: 'Download History — VideoMaster',
+    description: 'Browse and manage your past video downloads across all supported platforms.',
+  },
+  about: {
+    title: 'About — VideoMaster',
+    description: 'VideoMaster is a privacy-first, open-source video downloader built on yt-dlp and Django REST. No accounts, no ads, no tracking.',
+  },
+  settings: {
+    title: 'Settings — VideoMaster',
+    description: 'Customise VideoMaster: default quality, default platform, dark mode, notifications and download path.',
+  },
+};
+
+const setMetaContent = (selector: string, content: string) => {
+  document.querySelector<HTMLMetaElement>(selector)?.setAttribute('content', content);
+};
+
+const usePageMeta = (page: Page) => {
+  useEffect(() => {
+    const { title, description } = PAGE_META[page];
+    document.title = title;
+    setMetaContent('meta[name="description"]', description);
+    setMetaContent('meta[property="og:title"]', title);
+    setMetaContent('meta[property="og:description"]', description);
+    setMetaContent('meta[name="twitter:title"]', title);
+    setMetaContent('meta[name="twitter:description"]', description);
+  }, [page]);
+};
 
 const platformColor = (k: Platform) => PLATFORMS.find(p => p.key === k)?.color ?? '#999';
 const platformName  = (k: Platform) => PLATFORMS.find(p => p.key === k)?.name  ?? k;
@@ -184,8 +225,6 @@ const HomePage: React.FC<{ setPage: (p: Page) => void; dark: boolean }> = ({ set
 
   return (
     <div style={{ background: bg, minHeight: '100vh', padding: '60px 32px', fontFamily: "'DM Sans',sans-serif" }}>
-      <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
-
       {/* Hero */}
       <div style={{ maxWidth: 860, margin: '0 auto 80px', textAlign: 'center' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 20, padding: '6px 16px',
@@ -494,7 +533,8 @@ const DownloadPage: React.FC<{ dark: boolean; defaultPlatform: Platform; default
 
 // ─── PAGE: History ────────────────────────────────────────────────────────────
 
-const HistoryPage: React.FC<{ dark: boolean }> = ({ dark }) => {
+// Exported because the History nav entry is currently commented out in App.
+export const HistoryPage: React.FC<{ dark: boolean }> = ({ dark }) => {
   const [items, setItems] = useState<DownloadItem[]>(MOCK_HISTORY);
   const [filter, setFilter] = useState<'all' | Platform | 'done' | 'failed'>('all');
 
@@ -542,7 +582,7 @@ const HistoryPage: React.FC<{ dark: boolean }> = ({ dark }) => {
         <div style={{ display: 'flex', gap: 8, marginBottom: 28, flexWrap: 'wrap' }}>
           {filterOpts.map(f => (
             <button key={f.key} onClick={() => setFilter(f.key)} style={{
-              padding: '7px 16px', borderRadius: 99, border: 'none', cursor: 'pointer',
+              padding: '7px 16px', borderRadius: 99, cursor: 'pointer',
               background: filter === f.key ? '#7c3aed' : (c ? 'rgba(255,255,255,0.07)' : '#fff'),
               color: filter === f.key ? '#fff' : (c ? '#9ca3af' : '#6b7280'),
               fontWeight: 700, fontSize: 12, fontFamily: "'DM Sans',sans-serif",
@@ -814,6 +854,8 @@ const App: React.FC = () => {
 
   const dark = settings.darkMode;
 
+  usePageMeta(page);
+
   return (
     <div
         style={{
@@ -822,7 +864,6 @@ const App: React.FC = () => {
           minHeight: '100vh',
         }}
       >
-      <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
       <GlassNav page={page} setPage={setPage} dark={dark} setDark={d => setSettings(s => ({ ...s, darkMode: d }))} />
 
       {page === 'home'     && <HomePage     setPage={setPage} dark={dark} />}
