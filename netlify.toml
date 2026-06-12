@@ -1,0 +1,18 @@
+# Netlify deploys only the Vite/React frontend in downloads_video/.
+# The Django backend must be hosted elsewhere; point VITE_API_BASE_URL at it
+# (Site settings -> Environment variables) so the frontend calls the right API.
+
+[build]
+  base = "downloads_video"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Vite 8 requires Node >= 22.12
+  NODE_VERSION = "22"
+
+# SPA fallback: serve index.html for all routes so client-side routing works
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -29,6 +29,8 @@ interface Settings {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000';
+
 const PLATFORMS = [
   { name: 'YouTube',           key: 'youtube'          as Platform, icon: '▶', color: '#FF0000', bg: '#fff0f0', desc: 'Videos, Shorts & Playlists' },
   { name: 'TikTok',            key: 'tiktok'           as Platform, icon: '♪', color: '#010101', bg: '#f0f0f0', desc: 'Trending Videos'             },
@@ -363,7 +365,7 @@ const DownloadPage: React.FC<{ dark: boolean; defaultPlatform: Platform; default
     setTimeout(() => {
       setPhase('dl');
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', `http://127.0.0.1:8000/download/${platform}/`, true);
+      xhr.open('POST', `${API_BASE_URL}/download/${platform}/`, true);
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.responseType = 'blob';
       xhr.onprogress = e => { if (e.lengthComputable) setProgress((e.loaded / e.total) * 100); };
