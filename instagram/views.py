@@ -22,6 +22,9 @@ class DownloadInstagramMedia(APIView):
                     'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
                     'noplaylist': True,
                     'merge_output_format': 'mp4',
+                    # Stories / private content require a logged-in session;
+                    # pull live cookies from the Brave browser profile.
+                    'cookiesfrombrowser': ('brave',),
                 }
 
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -66,29 +69,35 @@ class DownloadInstagramStory(APIView):
                     'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
                     'noplaylist': True,
                     'merge_output_format': 'mp4',
+                    # Stories / private content require a logged-in session;
+                    # pull live cookies from the Brave browser profile.
+                    'cookiesfrombrowser': ('brave',),
                 }
 
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    info_dict = ydl.extract_info(url, download=True)
-                    video_path = ydl.prepare_filename(info_dict)
+                    ydl.extract_info(url, download=True)
 
-                    # After merging, the real file may carry the .mp4 extension
-                    if not os.path.exists(video_path):
-                        base = os.path.splitext(video_path)[0]
-                        mp4_path = f"{base}.mp4"
-                        if os.path.exists(mp4_path):
-                            video_path = mp4_path
+                # A story is returned as a (single-item) playlist, so
+                # prepare_filename() points at the wrong name. Instead, take
+                # whatever media file yt-dlp actually wrote into the temp dir.
+                files = [
+                    os.path.join(temp_dir, f) for f in os.listdir(temp_dir)
+                    if os.path.isfile(os.path.join(temp_dir, f))
+                    and os.path.getsize(os.path.join(temp_dir, f)) > 0
+                ]
+                if not files:
+                    return Response({'error': 'Failed to download story.'}, status=status.HTTP_400_BAD_REQUEST)
 
-                    # Check if download was successful
-                    if not os.path.exists(video_path):
-                        return Response({'error': 'Failed to download story.'}, status=status.HTTP_400_BAD_REQUEST)
+                # Prefer the merged mp4, otherwise fall back to the largest file.
+                mp4s = [f for f in files if f.lower().endswith('.mp4')]
+                video_path = (mp4s or sorted(files, key=os.path.getsize, reverse=True))[0]
 
-                    # Serve the video as a download
-                    return FileResponse(
-                        open(video_path, 'rb'),
-                        as_attachment=True,
-                        filename='instagram_story.mp4'
-                    )
+                # Serve the video as a download
+                return FileResponse(
+                    open(video_path, 'rb'),
+                    as_attachment=True,
+                    filename='instagram_story.mp4'
+                )
 
             except Exception as e:
                 return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

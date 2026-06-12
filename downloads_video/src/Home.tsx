@@ -54,7 +54,7 @@ const URL_PATTERNS: Record<Platform, RegExp> = {
   instagram:        /(?:https?:\/\/)?(?:www\.)?instagram\.com\/(?:p|reel)\/[\w-]+/,
   instagram_story:  /(?:https?:\/\/)?(?:www\.)?instagram\.com\/stories\/[\w.-]+/,
   twitter:          /(?:https?:\/\/)?(?:www\.)?(?:twitter\.com|x\.com)\/[\w]+\/status\/\d+/,
-  facebook:         /(?:https?:\/\/)?(?:www\.)?facebook\.com\/(?:[\w.-]+\/videos\/|[\w.-]+\/posts\/)/,
+  facebook:         /(?:https?:\/\/)?(?:www\.|web\.|m\.)?(?:facebook\.com\/(?:share\/[rvp]\/[\w-]+|watch\/?\?v=\d+|reel\/\d+|[\w.-]+\/videos\/|[\w.-]+\/posts\/|video\.php\?v=\d+)|fb\.watch\/[\w-]+)/,
   facebook_story:   /(?:https?:\/\/)?(?:www\.)?facebook\.com\/stories\/\d+/,
 };
 
