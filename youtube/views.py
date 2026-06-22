@@ -28,11 +28,6 @@ class DownloadYouTubeVideo(APIView):
                 'quiet': False,
                 'cookiefile': settings.COOKIES_FILE,
                 'proxy': settings.YTDLP_PROXY,
-                'extractor_args': {
-                    'youtube': {
-                        'player_client': ['ios'],
-                    }
-                },
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=True)
