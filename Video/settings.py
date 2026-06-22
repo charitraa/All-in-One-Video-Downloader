@@ -10,22 +10,46 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from a local .env file if present. Real
+# environment variables (e.g. those set in the PythonAnywhere WSGI file) take
+# precedence and are never overwritten.
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$t+(3=1*y8faxg+x5l1gx()(pz@q98s=3^u_ows4@umoy76dwe'
+# Set DJANGO_SECRET_KEY in the PythonAnywhere web app's environment variables.
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-$t+(3=1*y8faxg+x5l1gx()(pz@q98s=3^u_ows4@umoy76dwe',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Defaults to False; export DJANGO_DEBUG=1 locally for development.
+DEBUG = os.environ.get('DJANGO_DEBUG', '') == '1'
 
-ALLOWED_HOSTS = []
+# Comma-separated hostnames, e.g. "yourusername.pythonanywhere.com".
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
+    if h.strip()
+]
+if DEBUG and not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+
+# Absolute path to the Netscape-format cookies file used by yt-dlp for
+# authenticated/private content. Override with DJANGO_COOKIES_FILE if needed.
+COOKIES_FILE = os.environ.get('DJANGO_COOKIES_FILE') or str(BASE_DIR / 'cookies.txt')
 
 
 # Application definition
@@ -44,6 +68,7 @@ INSTALLED_APPS = [
     'tiktok',
     'instagram',
     'facebook',
+    'reddit',
 ]
 
 MIDDLEWARE = [
@@ -125,12 +150,39 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# collectstatic target — map this directory in the PythonAnywhere "Web" tab so
+# the admin's CSS/JS are served in production.
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Comma-separated frontend origins allowed to call the API in production,
+# e.g. "https://yourfrontend.com". Falls back to allowing all only in DEBUG.
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Frontend URL for React development,  # Production frontend URL if applicable
+    o.strip()
+    for o in os.environ.get('DJANGO_CORS_ALLOWED_ORIGINS', '').split(',')
+    if o.strip()
 ]
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = DEBUG and not CORS_ALLOWED_ORIGINS
+
+# Hosts trusted for unsafe (POST) requests behind HTTPS, e.g. the PythonAnywhere
+# domain. Required when DEBUG is off and admin/CSRF is used over HTTPS.
+CSRF_TRUSTED_ORIGINS = [
+    o.strip()
+    for o in os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',')
+    if o.strip()
+]
+
+# Production hardening (active only when DEBUG is off). PythonAnywhere serves
+# HTTPS and terminates SSL at a proxy that forwards X-Forwarded-Proto.
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True

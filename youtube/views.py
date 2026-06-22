@@ -2,6 +2,7 @@ import os
 import tempfile
 import yt_dlp
 
+from django.conf import settings
 from django.http import FileResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -34,7 +35,7 @@ class DownloadYouTubeVideo(APIView):
                 'noplaylist': True,
                 'merge_output_format': 'mp4',
                 'quiet': False,
-                'cookiefile': 'cookies.txt',
+                'cookiefile': settings.COOKIES_FILE,
                 # YouTube now requires a JavaScript runtime to solve signature
                 # challenges; 'node' is on PATH. Without this, only image
                 # formats are returned and the requested mp4 is unavailable.

@@ -1,6 +1,7 @@
 import yt_dlp
 import os
 import tempfile
+from django.conf import settings
 from django.http import FileResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,9 +23,10 @@ class DownloadInstagramMedia(APIView):
                     'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
                     'noplaylist': True,
                     'merge_output_format': 'mp4',
-                    # Stories / private content require a logged-in session;
-                    # pull live cookies from the Brave browser profile.
-                    'cookiesfrombrowser': ('brave',),
+                    # Stories / private content require a logged-in session.
+                    # Use a Netscape-format cookies.txt (browser cookie jars are
+                    # unavailable on a headless server like PythonAnywhere).
+                    'cookiefile': settings.COOKIES_FILE,
                 }
 
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -69,9 +71,10 @@ class DownloadInstagramStory(APIView):
                     'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
                     'noplaylist': True,
                     'merge_output_format': 'mp4',
-                    # Stories / private content require a logged-in session;
-                    # pull live cookies from the Brave browser profile.
-                    'cookiesfrombrowser': ('brave',),
+                    # Stories / private content require a logged-in session.
+                    # Use a Netscape-format cookies.txt (browser cookie jars are
+                    # unavailable on a headless server like PythonAnywhere).
+                    'cookiefile': settings.COOKIES_FILE,
                 }
 
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:

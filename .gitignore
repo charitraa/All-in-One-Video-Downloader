@@ -1,1 +1,21 @@
 /env
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Django
+db.sqlite3
+staticfiles/
+
+# Secrets — uploaded per-environment, never committed
+cookies.txt
+.env
+.env.*
+!.env.example
+
+# Downloaded / build artifacts
+videos/
+dist/
+*.webm
+*.mp4
