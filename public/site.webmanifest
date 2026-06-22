@@ -1,0 +1,18 @@
+{
+  "name": "VideoMaster — All-in-One Video Downloader",
+  "short_name": "VideoMaster",
+  "description": "Download videos in up to 4K from YouTube, TikTok, Instagram, Twitter/X, Facebook and Stories — free, no watermarks, no login.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0e0c18",
+  "theme_color": "#7c3aed",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ]
+}

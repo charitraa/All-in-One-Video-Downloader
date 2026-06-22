@@ -1,9 +1,8 @@
-# Netlify deploys only the Vite/React frontend in downloads_video/.
+# Netlify deploys the Vite/React frontend, which lives at the repo root.
 # The Django backend must be hosted elsewhere; point VITE_API_BASE_URL at it
 # (Site settings -> Environment variables) so the frontend calls the right API.
 
 [build]
-  base = "downloads_video"
   command = "npm run build"
   publish = "dist"
 

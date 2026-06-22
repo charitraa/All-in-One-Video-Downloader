@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -71,6 +72,21 @@ const MOCK_HISTORY: DownloadItem[] = [
 
 // ─── SEO ──────────────────────────────────────────────────────────────────────
 
+const SITE_URL = 'https://videomaster.app';
+
+// Real URL for each page, so they are individually crawlable / linkable
+// (kept in sync with the routes in Router/Route.tsx and public/sitemap.xml).
+const PAGE_PATHS: Record<Page, string> = {
+  home: '/',
+  download: '/download',
+  history: '/history',
+  about: '/about',
+  settings: '/settings',
+};
+
+const pathToPage = (path: string): Page =>
+  (Object.keys(PAGE_PATHS) as Page[]).find(p => PAGE_PATHS[p] === path) ?? 'home';
+
 const PAGE_META: Record<Page, { title: string; description: string }> = {
   home: {
     title: 'VideoMaster — Free All-in-One Video Downloader for YouTube, TikTok, Instagram & More',
@@ -98,15 +114,22 @@ const setMetaContent = (selector: string, content: string) => {
   document.querySelector<HTMLMetaElement>(selector)?.setAttribute('content', content);
 };
 
+const setLinkHref = (selector: string, href: string) => {
+  document.querySelector<HTMLLinkElement>(selector)?.setAttribute('href', href);
+};
+
 const usePageMeta = (page: Page) => {
   useEffect(() => {
     const { title, description } = PAGE_META[page];
+    const url = SITE_URL + PAGE_PATHS[page];
     document.title = title;
     setMetaContent('meta[name="description"]', description);
     setMetaContent('meta[property="og:title"]', title);
     setMetaContent('meta[property="og:description"]', description);
+    setMetaContent('meta[property="og:url"]', url);
     setMetaContent('meta[name="twitter:title"]', title);
     setMetaContent('meta[name="twitter:description"]', description);
+    setLinkHref('link[rel="canonical"]', url);
   }, [page]);
 };
 
@@ -839,7 +862,12 @@ const SettingsPage: React.FC<{ settings: Settings; setSettings: (s: Settings) =>
 // ─── App Shell ────────────────────────────────────────────────────────────────
 
 const App: React.FC = () => {
-  const [page, setPage] = useState<Page>('home');
+  // Page is driven by the URL so each view has a real, shareable address.
+  const location = useLocation();
+  const navigate = useNavigate();
+  const page = pathToPage(location.pathname);
+  const setPage = (p: Page) => navigate(PAGE_PATHS[p]);
+
   const [settings, setSettings] = useState<Settings>({
     defaultQuality: '1080p',
     autoDownload: false,
