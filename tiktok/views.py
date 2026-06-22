@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import VideoDownloadSerializer
+from django.conf import settings
 import os
 import tempfile
 
@@ -41,6 +42,9 @@ class DownloadTikTokVideo(APIView):
                 'noplaylist': True,
                 'quiet': False,
                 'overwrites': True,  # Force overwrite even if file exists
+                # '' = direct connection (ignores inherited env proxies);
+                # set YTDLP_PROXY to route through a proxy.
+                'proxy': settings.YTDLP_PROXY,
                 'extractor_args': {
                     'tiktok': {
                         'api_hostname': ['api16-normal-c-useast1a.tiktokv.com']

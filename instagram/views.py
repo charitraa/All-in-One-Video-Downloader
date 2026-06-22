@@ -27,6 +27,9 @@ class DownloadInstagramMedia(APIView):
                     # Use a Netscape-format cookies.txt (browser cookie jars are
                     # unavailable on a headless server like PythonAnywhere).
                     'cookiefile': settings.COOKIES_FILE,
+                    # '' = direct connection (ignores inherited env proxies);
+                    # set YTDLP_PROXY to route through a proxy.
+                    'proxy': settings.YTDLP_PROXY,
                 }
 
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -75,6 +78,9 @@ class DownloadInstagramStory(APIView):
                     # Use a Netscape-format cookies.txt (browser cookie jars are
                     # unavailable on a headless server like PythonAnywhere).
                     'cookiefile': settings.COOKIES_FILE,
+                    # '' = direct connection (ignores inherited env proxies);
+                    # set YTDLP_PROXY to route through a proxy.
+                    'proxy': settings.YTDLP_PROXY,
                 }
 
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:

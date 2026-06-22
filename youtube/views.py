@@ -40,6 +40,9 @@ class DownloadYouTubeVideo(APIView):
                 # challenges; 'node' is on PATH. Without this, only image
                 # formats are returned and the requested mp4 is unavailable.
                 'js_runtimes': {'node': {}},
+                # '' = direct connection (ignores inherited env proxies);
+                # set YTDLP_PROXY to route through a proxy.
+                'proxy': settings.YTDLP_PROXY,
             }
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:

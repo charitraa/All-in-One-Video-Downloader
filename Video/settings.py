@@ -51,6 +51,13 @@ if DEBUG and not ALLOWED_HOSTS:
 # authenticated/private content. Override with DJANGO_COOKIES_FILE if needed.
 COOKIES_FILE = os.environ.get('DJANGO_COOKIES_FILE') or str(BASE_DIR / 'cookies.txt')
 
+# Proxy passed to yt-dlp. Set YTDLP_PROXY (e.g. a residential proxy) to route
+# downloads through it when YouTube blocks the server's cloud IP. The default
+# empty string forces a DIRECT connection, which also makes yt-dlp ignore any
+# HTTP_PROXY/HTTPS_PROXY env vars inherited from the host — otherwise a dead
+# proxy yields: "Tunnel connection failed: 403 Forbidden".
+YTDLP_PROXY = os.environ.get('YTDLP_PROXY', '')
+
 
 # Application definition
 

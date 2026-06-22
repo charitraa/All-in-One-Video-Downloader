@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import VideoDownloadSerializer
+from django.conf import settings
 import os
 import tempfile
 
@@ -22,6 +23,9 @@ class DownloadTwitterVideo(APIView):
                     'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
                     'noplaylist': True,
                     'merge_output_format': 'mp4',
+                    # '' = direct connection (ignores inherited env proxies);
+                    # set YTDLP_PROXY to route through a proxy.
+                    'proxy': settings.YTDLP_PROXY,
                 }
 
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
