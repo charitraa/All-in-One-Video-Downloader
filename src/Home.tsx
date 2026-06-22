@@ -30,44 +30,44 @@ interface Settings {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://videomaster.pythonanywhere.com';
 
 const PLATFORMS = [
-  { name: 'YouTube',           key: 'youtube'          as Platform, icon: '▶', color: '#FF0000', bg: '#fff0f0', desc: 'Videos, Shorts & Playlists' },
-  { name: 'TikTok',            key: 'tiktok'           as Platform, icon: '♪', color: '#010101', bg: '#f0f0f0', desc: 'Trending Videos'             },
-  { name: 'Instagram',         key: 'instagram'        as Platform, icon: '◈', color: '#C13584', bg: '#fdf0f8', desc: 'Posts & Reels'               },
-  { name: 'Twitter / X',       key: 'twitter'          as Platform, icon: '✕', color: '#000000', bg: '#f5f5f5', desc: 'Tweets with Media'           },
-  { name: 'Facebook',          key: 'facebook'         as Platform, icon: 'f', color: '#1877F2', bg: '#f0f5ff', desc: 'Videos & Posts'              },
-  { name: 'IG Stories',        key: 'instagram_story'  as Platform, icon: '○', color: '#F56040', bg: '#fff5f0', desc: 'Story Highlights'            },
-  { name: 'FB Stories',        key: 'facebook_story'   as Platform, icon: '◎', color: '#1877F2', bg: '#f0f5ff', desc: 'Story Content'               },
+  { name: 'YouTube', key: 'youtube' as Platform, icon: '▶', color: '#FF0000', bg: '#fff0f0', desc: 'Videos, Shorts & Playlists' },
+  { name: 'TikTok', key: 'tiktok' as Platform, icon: '♪', color: '#010101', bg: '#f0f0f0', desc: 'Trending Videos' },
+  { name: 'Instagram', key: 'instagram' as Platform, icon: '◈', color: '#C13584', bg: '#fdf0f8', desc: 'Posts & Reels' },
+  { name: 'Twitter / X', key: 'twitter' as Platform, icon: '✕', color: '#000000', bg: '#f5f5f5', desc: 'Tweets with Media' },
+  { name: 'Facebook', key: 'facebook' as Platform, icon: 'f', color: '#1877F2', bg: '#f0f5ff', desc: 'Videos & Posts' },
+  { name: 'IG Stories', key: 'instagram_story' as Platform, icon: '○', color: '#F56040', bg: '#fff5f0', desc: 'Story Highlights' },
+  { name: 'FB Stories', key: 'facebook_story' as Platform, icon: '◎', color: '#1877F2', bg: '#f0f5ff', desc: 'Story Content' },
 ];
 
 const QUALITIES: { key: Quality; label: string; badge: string }[] = [
-  { key: '4k',    label: '4K Ultra HD', badge: '4K'   },
+  { key: '4k', label: '4K Ultra HD', badge: '4K' },
   { key: '1080p', label: '1080p Full HD', badge: 'FHD' },
-  { key: '720p',  label: '720p HD',     badge: 'HD'   },
-  { key: '480p',  label: '480p SD',     badge: 'SD'   },
-  { key: '360p',  label: '360p Low',   badge: 'LQ'   },
-  { key: 'audio', label: 'Audio Only',  badge: '♪'    },
+  { key: '720p', label: '720p HD', badge: 'HD' },
+  { key: '480p', label: '480p SD', badge: 'SD' },
+  { key: '360p', label: '360p Low', badge: 'LQ' },
+  { key: 'audio', label: 'Audio Only', badge: '♪' },
 ];
 
 const URL_PATTERNS: Record<Platform, RegExp> = {
-  youtube:          /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)[^"&?/\s]{11}/,
-  tiktok:           /(?:https?:\/\/)?(?:www\.)?tiktok\.com\/@[\w.-]+\/video\/\d+/,
-  instagram:        /(?:https?:\/\/)?(?:www\.)?instagram\.com\/(?:p|reel)\/[\w-]+/,
-  instagram_story:  /(?:https?:\/\/)?(?:www\.)?instagram\.com\/stories\/[\w.-]+/,
-  twitter:          /(?:https?:\/\/)?(?:www\.)?(?:twitter\.com|x\.com)\/[\w]+\/status\/\d+/,
-  facebook:         /(?:https?:\/\/)?(?:www\.|web\.|m\.)?(?:facebook\.com\/(?:share\/[rvp]\/[\w-]+|watch\/?\?v=\d+|reel\/\d+|[\w.-]+\/videos\/|[\w.-]+\/posts\/|video\.php\?v=\d+)|fb\.watch\/[\w-]+)/,
-  facebook_story:   /(?:https?:\/\/)?(?:www\.)?facebook\.com\/stories\/\d+/,
+  youtube: /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)[^"&?/\s]{11}/,
+  tiktok: /(?:https?:\/\/)?(?:www\.)?tiktok\.com\/@[\w.-]+\/video\/\d+/,
+  instagram: /(?:https?:\/\/)?(?:www\.)?instagram\.com\/(?:p|reel)\/[\w-]+/,
+  instagram_story: /(?:https?:\/\/)?(?:www\.)?instagram\.com\/stories\/[\w.-]+/,
+  twitter: /(?:https?:\/\/)?(?:www\.)?(?:twitter\.com|x\.com)\/[\w]+\/status\/\d+/,
+  facebook: /(?:https?:\/\/)?(?:www\.|web\.|m\.)?(?:facebook\.com\/(?:share\/[rvp]\/[\w-]+|watch\/?\?v=\d+|reel\/\d+|[\w.-]+\/videos\/|[\w.-]+\/posts\/|video\.php\?v=\d+)|fb\.watch\/[\w-]+)/,
+  facebook_story: /(?:https?:\/\/)?(?:www\.)?facebook\.com\/stories\/\d+/,
 };
 
 const MOCK_HISTORY: DownloadItem[] = [
-  { id: '1', platform: 'youtube', url: 'https://youtube.com/watch?v=abc', filename: 'Big Buck Bunny.mp4',        status: 'done',   size: '128 MB', date: '2026-05-13', quality: '1080p', thumb: '' },
-  { id: '2', platform: 'tiktok',  url: 'https://tiktok.com/@x/video/1',  filename: 'Dance Challenge.mp4',       status: 'done',   size: '14 MB',  date: '2026-05-12', quality: '720p',  thumb: '' },
-  { id: '3', platform: 'instagram',url: 'https://instagram.com/p/abc',    filename: 'IG Reel.mp4',               status: 'failed', size: '—',      date: '2026-05-12', quality: '720p',  thumb: '' },
-  { id: '4', platform: 'twitter', url: 'https://x.com/user/status/1',    filename: 'Twitter Clip.mp4',          status: 'done',   size: '22 MB',  date: '2026-05-11', quality: '480p',  thumb: '' },
-  { id: '5', platform: 'facebook',url: 'https://facebook.com/p/v/1',     filename: 'FB Video.mp4',              status: 'done',   size: '55 MB',  date: '2026-05-10', quality: '1080p', thumb: '' },
-  { id: '6', platform: 'youtube', url: 'https://youtube.com/watch?v=xyz', filename: 'Nature Documentary.mp4',   status: 'done',   size: '340 MB', date: '2026-05-09', quality: '4k',    thumb: '' },
+  { id: '1', platform: 'youtube', url: 'https://youtube.com/watch?v=abc', filename: 'Big Buck Bunny.mp4', status: 'done', size: '128 MB', date: '2026-05-13', quality: '1080p', thumb: '' },
+  { id: '2', platform: 'tiktok', url: 'https://tiktok.com/@x/video/1', filename: 'Dance Challenge.mp4', status: 'done', size: '14 MB', date: '2026-05-12', quality: '720p', thumb: '' },
+  { id: '3', platform: 'instagram', url: 'https://instagram.com/p/abc', filename: 'IG Reel.mp4', status: 'failed', size: '—', date: '2026-05-12', quality: '720p', thumb: '' },
+  { id: '4', platform: 'twitter', url: 'https://x.com/user/status/1', filename: 'Twitter Clip.mp4', status: 'done', size: '22 MB', date: '2026-05-11', quality: '480p', thumb: '' },
+  { id: '5', platform: 'facebook', url: 'https://facebook.com/p/v/1', filename: 'FB Video.mp4', status: 'done', size: '55 MB', date: '2026-05-10', quality: '1080p', thumb: '' },
+  { id: '6', platform: 'youtube', url: 'https://youtube.com/watch?v=xyz', filename: 'Nature Documentary.mp4', status: 'done', size: '340 MB', date: '2026-05-09', quality: '4k', thumb: '' },
 ];
 
 // ─── SEO ──────────────────────────────────────────────────────────────────────
@@ -134,8 +134,8 @@ const usePageMeta = (page: Page) => {
 };
 
 const platformColor = (k: Platform) => PLATFORMS.find(p => p.key === k)?.color ?? '#999';
-const platformName  = (k: Platform) => PLATFORMS.find(p => p.key === k)?.name  ?? k;
-const platformIcon  = (k: Platform) => PLATFORMS.find(p => p.key === k)?.icon  ?? '?';
+const platformName = (k: Platform) => PLATFORMS.find(p => p.key === k)?.name ?? k;
+const platformIcon = (k: Platform) => PLATFORMS.find(p => p.key === k)?.icon ?? '?';
 
 // ─── Shared UI Components ─────────────────────────────────────────────────────
 
@@ -167,11 +167,11 @@ const Card: React.FC<{ children: React.ReactNode; style?: React.CSSProperties; c
 
 const GlassNav: React.FC<{ page: Page; setPage: (p: Page) => void; dark: boolean; setDark: (v: boolean) => void }> = ({ page, setPage, dark, setDark }) => {
   const navItems: { key: Page; label: string; icon: string }[] = [
-    { key: 'home',     label: 'Home',     icon: '⌂'  },
-    { key: 'download', label: 'Download', icon: '↓'  },
+    { key: 'home', label: 'Home', icon: '⌂' },
+    { key: 'download', label: 'Download', icon: '↓' },
     // { key: 'history',  label: 'History',  icon: '⧗'  },
-    { key: 'about',    label: 'About',    icon: '◉'  },
-    { key: 'settings', label: 'Settings', icon: '⚙'  },
+    { key: 'about', label: 'About', icon: '◉' },
+    { key: 'settings', label: 'Settings', icon: '⚙' },
   ];
   return (
     <nav style={{
@@ -230,17 +230,17 @@ const GlassNav: React.FC<{ page: Page; setPage: (p: Page) => void; dark: boolean
 const HomePage: React.FC<{ setPage: (p: Page) => void; dark: boolean }> = ({ setPage, dark }) => {
   const stats = [
     { val: '50M+', label: 'Downloads', icon: '↓' },
-    { val: '7',    label: 'Platforms',  icon: '◈' },
-    { val: '4K',   label: 'Max Quality',icon: '◉' },
-    { val: '0',    label: 'Ads',        icon: '✕' },
+    { val: '7', label: 'Platforms', icon: '◈' },
+    { val: '4K', label: 'Max Quality', icon: '◉' },
+    { val: '0', label: 'Ads', icon: '✕' },
   ];
   const features = [
     { icon: '⚡', title: 'Instant Downloads', desc: 'Optimised pipeline gets you video files in seconds, not minutes.' },
-    { icon: '🔒', title: 'Zero Tracking',     desc: 'No logs, no analytics, no fingerprinting. Your downloads stay yours.' },
-    { icon: '🎯', title: 'Any Quality',        desc: 'From 360p to 4K UHD — pick exactly what you need.' },
-    { icon: '♾',  title: 'No Limits',         desc: 'Download as many videos as you want. Free. Forever.' },
-    { icon: '◈',  title: '7 Platforms',        desc: 'YouTube, TikTok, Instagram, Twitter, Facebook and more.' },
-    { icon: '◎',  title: 'Audio Extraction',   desc: 'Strip just the audio track in high quality MP3 format.' },
+    { icon: '🔒', title: 'Zero Tracking', desc: 'No logs, no analytics, no fingerprinting. Your downloads stay yours.' },
+    { icon: '🎯', title: 'Any Quality', desc: 'From 360p to 4K UHD — pick exactly what you need.' },
+    { icon: '♾', title: 'No Limits', desc: 'Download as many videos as you want. Free. Forever.' },
+    { icon: '◈', title: '7 Platforms', desc: 'YouTube, TikTok, Instagram, Twitter, Facebook and more.' },
+    { icon: '◎', title: 'Audio Extraction', desc: 'Strip just the audio track in high quality MP3 format.' },
   ];
 
   const c = dark;
@@ -252,16 +252,20 @@ const HomePage: React.FC<{ setPage: (p: Page) => void; dark: boolean }> = ({ set
     <div style={{ background: bg, minHeight: '100vh', padding: '60px 32px', fontFamily: "'DM Sans',sans-serif" }}>
       {/* Hero */}
       <div style={{ maxWidth: 860, margin: '0 auto 80px', textAlign: 'center' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 20, padding: '6px 16px',
-          background: '#7c3aed18', border: '1px solid #7c3aed33', borderRadius: 99 }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 20, padding: '6px 16px',
+          background: '#7c3aed18', border: '1px solid #7c3aed33', borderRadius: 99
+        }}>
           <span style={{ width: 7, height: 7, borderRadius: 99, background: '#7c3aed', display: 'inline-block' }} />
           <span style={{ color: '#7c3aed', fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             No watermarks · No login
           </span>
         </div>
 
-        <h1 style={{ fontFamily: "'Syne',sans-serif", fontSize: 'clamp(48px,7vw,88px)', fontWeight: 900, lineHeight: 1.08,
-          color: txt, letterSpacing: '-0.04em', margin: '0 0 24px' }}>
+        <h1 style={{
+          fontFamily: "'Syne',sans-serif", fontSize: 'clamp(48px,7vw,88px)', fontWeight: 900, lineHeight: 1.08,
+          color: txt, letterSpacing: '-0.04em', margin: '0 0 24px'
+        }}>
           Download Any Video<br />
           <span style={{ background: 'linear-gradient(135deg,#7c3aed,#2563eb)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             From Anywhere
@@ -323,8 +327,10 @@ const HomePage: React.FC<{ setPage: (p: Page) => void; dark: boolean }> = ({ set
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'; (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 24px ${p.color}33`; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
             >
-              <span style={{ width: 32, height: 32, borderRadius: 9, background: p.color, color: '#fff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 15 }}>{p.icon}</span>
+              <span style={{
+                width: 32, height: 32, borderRadius: 9, background: p.color, color: '#fff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 15
+              }}>{p.icon}</span>
               <span style={{ color: txt, fontWeight: 600, fontSize: 14 }}>{p.name}</span>
             </div>
           ))}
@@ -354,13 +360,13 @@ const HomePage: React.FC<{ setPage: (p: Page) => void; dark: boolean }> = ({ set
 
 const DownloadPage: React.FC<{ dark: boolean; defaultPlatform: Platform; defaultQuality: Quality }> = ({ dark, defaultPlatform, defaultQuality }) => {
   const [platform, setPlatform] = useState<Platform>(defaultPlatform);
-  const [url, setUrl]           = useState('');
-  const [quality, setQuality]   = useState<Quality>(defaultQuality);
-  const [error, setError]       = useState<string | null>(null);
-  const [success, setSuccess]   = useState<string | null>(null);
+  const [url, setUrl] = useState('');
+  const [quality, setQuality] = useState<Quality>(defaultQuality);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [busy, setBusy]         = useState(false);
-  const [phase, setPhase]       = useState<'idle'|'fetch'|'dl'>('idle');
+  const [busy, setBusy] = useState(false);
+  const [phase, setPhase] = useState<'idle' | 'fetch' | 'dl'>('idle');
 
   const c = dark;
   const bg = c ? '#0e0c18' : '#f7f5ff';
@@ -433,9 +439,11 @@ const DownloadPage: React.FC<{ dark: boolean; defaultPlatform: Platform; default
                   background: active ? `${p.color}15` : 'transparent',
                   cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s',
                 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, background: active ? p.color : (c ? 'rgba(255,255,255,0.08)' : '#f3f4f6'),
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 10, background: active ? p.color : (c ? 'rgba(255,255,255,0.08)' : '#f3f4f6'),
                     display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px',
-                    color: active ? '#fff' : (c ? '#9ca3af' : '#6b7280'), fontWeight: 900, fontSize: 16 }}>
+                    color: active ? '#fff' : (c ? '#9ca3af' : '#6b7280'), fontWeight: 900, fontSize: 16
+                  }}>
                     {p.icon}
                   </div>
                   <div style={{ fontSize: 12, fontWeight: 700, color: active ? p.color : (c ? '#9ca3af' : '#6b7280') }}>{p.name}</div>
@@ -476,14 +484,18 @@ const DownloadPage: React.FC<{ dark: boolean; defaultPlatform: Platform; default
           </div>
 
           {error && (
-            <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 10,
-              background: '#ef444418', border: '1px solid #ef444433', color: '#ef4444', fontSize: 13, fontWeight: 600 }}>
+            <div style={{
+              marginTop: 12, padding: '10px 14px', borderRadius: 10,
+              background: '#ef444418', border: '1px solid #ef444433', color: '#ef4444', fontSize: 13, fontWeight: 600
+            }}>
               ⚠ {error}
             </div>
           )}
           {success && (
-            <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 10,
-              background: '#22c55e18', border: '1px solid #22c55e33', color: '#22c55e', fontSize: 13, fontWeight: 600 }}>
+            <div style={{
+              marginTop: 12, padding: '10px 14px', borderRadius: 10,
+              background: '#22c55e18', border: '1px solid #22c55e33', color: '#22c55e', fontSize: 13, fontWeight: 600
+            }}>
               ✓ {success}
             </div>
           )}
@@ -634,9 +646,11 @@ export const HistoryPage: React.FC<{ dark: boolean }> = ({ dark }) => {
                   border: c ? '1.5px solid rgba(255,255,255,0.07)' : undefined,
                 }}>
                   {/* Platform icon */}
-                  <div style={{ width: 44, height: 44, borderRadius: 12, background: `${color}18`,
+                  <div style={{
+                    width: 44, height: 44, borderRadius: 12, background: `${color}18`,
                     border: `1.5px solid ${color}33`, display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', fontSize: 20, fontWeight: 900, color, flexShrink: 0 }}>
+                    justifyContent: 'center', fontSize: 20, fontWeight: 900, color, flexShrink: 0
+                  }}>
                     {platformIcon(item.platform)}
                   </div>
 
@@ -708,8 +722,10 @@ const AboutPage: React.FC<{ dark: boolean }> = ({ dark }) => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20, marginBottom: 56 }}>
           {steps.map(s => (
             <Card key={s.n} style={{ background: c ? 'rgba(255,255,255,0.04)' : undefined, border: c ? '1.5px solid rgba(255,255,255,0.07)' : undefined }}>
-              <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 40, fontWeight: 900,
-                color: '#7c3aed', opacity: 0.25, marginBottom: 12, lineHeight: 1 }}>{s.n}</div>
+              <div style={{
+                fontFamily: "'Syne',sans-serif", fontSize: 40, fontWeight: 900,
+                color: '#7c3aed', opacity: 0.25, marginBottom: 12, lineHeight: 1
+              }}>{s.n}</div>
               <h3 style={{ fontFamily: "'Syne',sans-serif", fontSize: 16, fontWeight: 800, color: txt, marginBottom: 8 }}>{s.title}</h3>
               <p style={{ color: sub, fontSize: 14, lineHeight: 1.65, margin: 0 }}>{s.desc}</p>
             </Card>
@@ -770,8 +786,10 @@ const SettingsPage: React.FC<{ settings: Settings; setSettings: (s: Settings) =>
   );
 
   const Row: React.FC<{ label: string; desc?: string; children: React.ReactNode }> = ({ label, desc, children }) => (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 0',
-      borderBottom: `1px solid ${c ? 'rgba(255,255,255,0.05)' : '#f3f4f6'}` }}>
+    <div style={{
+      display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 0',
+      borderBottom: `1px solid ${c ? 'rgba(255,255,255,0.05)' : '#f3f4f6'}`
+    }}>
       <div>
         <div style={{ color: txt, fontWeight: 600, fontSize: 14 }}>{label}</div>
         {desc && <div style={{ color: sub, fontSize: 12, marginTop: 2 }}>{desc}</div>}
@@ -826,8 +844,10 @@ const SettingsPage: React.FC<{ settings: Settings; setSettings: (s: Settings) =>
           </Row>
           <Row label="Download Path" desc="Local folder to save files">
             <input value={settings.downloadPath} onChange={e => update('downloadPath', e.target.value)}
-              style={{ padding: '8px 12px', borderRadius: 10, border: `1.5px solid ${borderCol}`,
-                background: inputBg, color: txt, fontSize: 13, width: 200, fontFamily: "'DM Sans',sans-serif", outline: 'none' }} />
+              style={{
+                padding: '8px 12px', borderRadius: 10, border: `1.5px solid ${borderCol}`,
+                background: inputBg, color: txt, fontSize: 13, width: 200, fontFamily: "'DM Sans',sans-serif", outline: 'none'
+              }} />
           </Row>
         </Card>
 
@@ -888,18 +908,18 @@ const App: React.FC = () => {
 
   return (
     <div
-        style={{
-          fontFamily: "'DM Sans',sans-serif",
-          background: dark ? '#0e0c18' : '#f7f5ff',
-          minHeight: '100vh',
-        }}
-      >
+      style={{
+        fontFamily: "'DM Sans',sans-serif",
+        background: dark ? '#0e0c18' : '#f7f5ff',
+        minHeight: '100vh',
+      }}
+    >
       <GlassNav page={page} setPage={setPage} dark={dark} setDark={d => setSettings(s => ({ ...s, darkMode: d }))} />
 
-      {page === 'home'     && <HomePage     setPage={setPage} dark={dark} />}
+      {page === 'home' && <HomePage setPage={setPage} dark={dark} />}
       {page === 'download' && <DownloadPage dark={dark} defaultPlatform={settings.defaultPlatform} defaultQuality={settings.defaultQuality} />}
       {/* {page === 'history'  && <HistoryPage  dark={dark} />} */}
-      {page === 'about'    && <AboutPage    dark={dark} />}
+      {page === 'about' && <AboutPage dark={dark} />}
       {page === 'settings' && <SettingsPage settings={settings} setSettings={handleSetSettings} dark={dark} />}
     </div>
   );
