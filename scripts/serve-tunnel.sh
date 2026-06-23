@@ -66,4 +66,4 @@ trap cleanup EXIT INT TERM
 echo ">> starting Cloudflare Tunnel -> http://$BIND"
 echo ">> copy the printed https://<random>.trycloudflare.com URL into your frontend's API base."
 echo ">> (DJANGO_ALLOWED_HOSTS=.trycloudflare.com already accepts any quick-tunnel subdomain)"
-cloudflared tunnel --url "http://$BIND"
+cloudflared tunnel run videomaster
