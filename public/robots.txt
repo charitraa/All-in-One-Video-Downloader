@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://videomaster.app/sitemap.xml
+Sitemap: https://video-master.netlify.app/sitemap.xml

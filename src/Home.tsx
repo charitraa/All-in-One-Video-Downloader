@@ -72,7 +72,7 @@ const MOCK_HISTORY: DownloadItem[] = [
 
 // ─── SEO ──────────────────────────────────────────────────────────────────────
 
-const SITE_URL = 'https://videomaster.app';
+const SITE_URL = 'https://video-master.netlify.app';
 
 // Real URL for each page, so they are individually crawlable / linkable
 // (kept in sync with the routes in Router/Route.tsx and public/sitemap.xml).
