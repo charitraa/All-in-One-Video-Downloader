@@ -28,6 +28,10 @@ class DownloadYouTubeVideo(APIView):
                 'quiet': False,
                 'cookiefile': settings.COOKIES_FILE,
                 'proxy': settings.YTDLP_PROXY,
+                # YouTube's n-challenge needs a JS runtime; yt-dlp does not
+                # auto-detect one, so register node explicitly (path=None ->
+                # found on PATH). Requires the yt-dlp-ejs solver scripts.
+                'js_runtimes': {'node': {'path': None}},
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=True)
