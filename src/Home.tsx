@@ -30,7 +30,7 @@ interface Settings {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'https://tolerance-greatly-scale-las.trycloudflare.com';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'https://videomaster.charitrashrestha.com.np';
 
 const PLATFORMS = [
   { name: 'YouTube', key: 'youtube' as Platform, icon: '▶', color: '#FF0000', bg: '#fff0f0', desc: 'Videos, Shorts & Playlists' },
